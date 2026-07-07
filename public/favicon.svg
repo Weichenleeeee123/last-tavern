@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#f4c842" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#f4c842" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="flame" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff3c4"/>
+      <stop offset="55%" stop-color="#f4c842"/>
+      <stop offset="100%" stop-color="#c9a84c"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8dcc4"/>
+      <stop offset="100%" stop-color="#9a8b6f"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ambient glow -->
+  <circle cx="24" cy="18" r="20" fill="url(#glow)"/>
+
+  <!-- flame -->
+  <path d="M24 3 C 20.5 8.5, 17.5 12, 17.5 17 C 17.5 21.5, 20.5 24.5, 24 24.5 C 27.5 24.5, 30.5 21.5, 30.5 17 C 30.5 12, 27.5 8.5, 24 3 Z" fill="url(#flame)"/>
+  <ellipse cx="24" cy="16.5" rx="2.6" ry="4.6" fill="#fff7d6" opacity="0.85"/>
+
+  <!-- wick -->
+  <rect x="23.2" y="23.5" width="1.6" height="4.5" fill="#3a2a1a"/>
+
+  <!-- candle body -->
+  <rect x="15.5" y="27.5" width="17" height="17.5" rx="2.5" fill="url(#body)" stroke="#c9a84c" stroke-width="0.6"/>
+  <ellipse cx="24" cy="27.7" rx="8.5" ry="2.1" fill="#2a1f15" opacity="0.35"/>
+  <ellipse cx="24" cy="27.7" rx="8.5" ry="2.1" fill="none" stroke="#c9a84c" stroke-width="0.6"/>
+</svg>
