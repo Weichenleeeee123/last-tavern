@@ -8,10 +8,20 @@ export function CharacterInfo() {
     <div className="flex flex-col items-center text-center">
       {/* 肖像 */}
       <div className="w-32 h-32 md:w-40 md:h-40 rounded-lg overflow-hidden border-2 border-tavern-gold/30 candle-glow mb-4">
-        <div className="w-full h-full bg-gradient-to-b from-tavern-bg2 to-tavern-bg flex items-center justify-center">
-          <span className="text-tavern-gold/40 font-serif-cn text-4xl">
-            {character.name[0]}
-          </span>
+        <div className="w-full h-full overflow-hidden bg-gradient-to-b from-tavern-bg2 to-tavern-bg">
+          <img
+            src={character.portrait}
+            alt={character.name}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              const target = e.currentTarget;
+              target.style.display = 'none';
+              const parent = target.parentElement;
+              if (parent) {
+                parent.innerHTML = `<span class="text-tavern-gold/40 font-serif-cn text-4xl flex items-center justify-center w-full h-full">${character.name[0]}</span>`;
+              }
+            }}
+          />
         </div>
       </div>
 

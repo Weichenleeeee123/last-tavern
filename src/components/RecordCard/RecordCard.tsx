@@ -61,10 +61,20 @@ export function RecordCard() {
 
         {/* 人物区 */}
         <div className="flex items-center gap-4 py-4 border-b border-tavern-gold/20">
-          <div className="w-16 h-16 rounded-lg overflow-hidden border border-tavern-gold/20 bg-tavern-bg flex items-center justify-center flex-shrink-0">
-            <span className="text-tavern-gold/40 font-serif-cn text-xl">
-              {recordCard.characterName[0]}
-            </span>
+          <div className="w-16 h-16 rounded-lg overflow-hidden border border-tavern-gold/20 bg-tavern-bg flex-shrink-0">
+            <img
+              src={recordCard.portrait}
+              alt={recordCard.characterName}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.style.display = 'none';
+                const parent = target.parentElement;
+                if (parent) {
+                  parent.innerHTML = `<span class="text-tavern-gold/40 font-serif-cn text-xl flex items-center justify-center w-full h-full">${recordCard.characterName[0]}</span>`;
+                }
+              }}
+            />
           </div>
           <div>
             <p className="text-tavern-gold font-serif-cn text-base">
