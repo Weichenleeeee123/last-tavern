@@ -19,13 +19,16 @@ export async function sendChatMessage(
   messages: Message[],
   userMessage: string
 ): Promise<string> {
+  // 在用户消息后追加格式提醒，确保 LLM 每次都输出 ||| 建议选项
+  const formatReminder = '\n\n（请在回复正文后附上3个来客回应选项，用 ||| 分隔）';
+  
   const chatMessages: ChatMessage[] = [
     { role: 'system', content: systemPrompt },
     ...messages.map(m => ({
       role: m.role as 'user' | 'assistant',
       content: m.content,
     })),
-    { role: 'user', content: userMessage },
+    { role: 'user', content: userMessage + formatReminder },
   ];
 
   const response = await fetchWithTimeout(
@@ -40,7 +43,7 @@ export async function sendChatMessage(
         model: settings.model,
         messages: chatMessages,
         temperature: 0.8,
-        max_tokens: 300,
+        max_tokens: 500,
       }),
     },
     30000
