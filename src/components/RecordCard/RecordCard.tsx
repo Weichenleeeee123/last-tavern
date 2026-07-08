@@ -99,6 +99,30 @@ export function RecordCard() {
           </p>
         </div>
 
+        {/* 金句摘录 */}
+        {recordCard.goldenQuotes && recordCard.goldenQuotes.length > 0 && (
+          <div className="relative py-4 border-b border-amber-900/30">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-amber-800 font-serif-cn text-xs font-bold">
+                对饮金句
+              </span>
+              <div className="flex-1 border-t border-dashed border-amber-900/20" />
+            </div>
+            <div className="space-y-2">
+              {recordCard.goldenQuotes.map((q, i) => (
+                <div key={i} className="flex gap-2">
+                  <span className="text-amber-700/50 font-serif-cn text-sm leading-relaxed flex-shrink-0">
+                    ❝
+                  </span>
+                  <p className="text-amber-950/85 font-serif-cn text-xs italic leading-relaxed">
+                    {q}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* 三段式核心 */}
         <div className="relative py-4 space-y-4">
           <div>

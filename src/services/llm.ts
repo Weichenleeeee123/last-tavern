@@ -59,7 +59,7 @@ export async function generateSummary(
   settings: LLMSettings,
   character: Character,
   messages: Message[]
-): Promise<{ userAppeal: string; characterInsist: string }> {
+): Promise<{ userAppeal: string; characterInsist: string; goldenQuotes: string[] }> {
   const chatMessages: ChatMessage[] = [
     { role: 'system', content: character.systemPrompt },
     ...messages.map(m => ({
@@ -81,7 +81,7 @@ export async function generateSummary(
         model: settings.model,
         messages: chatMessages,
         temperature: 0.3,
-        max_tokens: 200,
+        max_tokens: 300,
       }),
     },
     30000
@@ -102,6 +102,7 @@ export async function generateSummary(
       return {
         userAppeal: parsed.userAppeal || '未能提取',
         characterInsist: parsed.characterInsist || '未能提取',
+        goldenQuotes: Array.isArray(parsed.goldenQuotes) ? parsed.goldenQuotes.slice(0, 3) : [],
       };
     }
   } catch {
@@ -114,6 +115,7 @@ export async function generateSummary(
   return {
     userAppeal: lastUserMsg?.content.slice(0, 50) || '未能提取',
     characterInsist: lastAssistantMsg?.content.slice(0, 50) || '未能提取',
+    goldenQuotes: [],
   };
 }
 

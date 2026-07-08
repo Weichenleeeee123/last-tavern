@@ -38,7 +38,7 @@ export function InputBar() {
   };
 
   return (
-    <div className="border-t border-tavern-gold/10 bg-tavern-bg/30 flex-shrink-0">
+    <div className="border-t border-tavern-gold/15 bg-tavern-bg2/70 flex-shrink-0">
       {/* 引导选项 */}
       {suggestions.length > 0 && !isGenerating && (
         <div className="px-4 pt-3 flex flex-wrap gap-2">
@@ -46,12 +46,12 @@ export function InputBar() {
             <button
               key={i}
               onClick={() => handleSuggestion(s)}
-              className="group flex items-center gap-1.5 bg-tavern-bg2/40 hover:bg-tavern-gold/10 border border-tavern-gold/15 hover:border-tavern-gold/40 rounded-lg px-3 py-1.5 transition-all"
+              className="group flex items-center gap-1.5 bg-tavern-bg2/70 hover:bg-tavern-gold/15 border border-tavern-gold/20 hover:border-tavern-gold/45 rounded-lg px-3 py-1.5 transition-all"
             >
-              <span className="text-tavern-gold/30 group-hover:text-tavern-gold/60 font-serif-cn text-[10px] transition-colors">
+              <span className="text-tavern-gold/40 group-hover:text-tavern-gold/70 font-serif-cn text-[10px] transition-colors">
                 {i + 1}
               </span>
-              <span className="text-tavern-text/60 group-hover:text-tavern-gold font-serif-cn text-xs transition-colors">
+              <span className="text-tavern-text/80 group-hover:text-tavern-gold font-serif-cn text-xs transition-colors">
                 {s}
               </span>
             </button>
@@ -68,7 +68,7 @@ export function InputBar() {
           onKeyDown={handleKeyDown}
           placeholder="说些什么..."
           rows={1}
-          className="flex-1 bg-tavern-bg2/60 border border-tavern-gold/20 rounded-lg px-4 py-3 text-tavern-text font-serif-cn text-sm focus:border-tavern-gold/50 focus:bg-tavern-bg2 outline-none resize-none max-h-32 transition-colors placeholder:text-tavern-muted/30"
+          className="flex-1 bg-tavern-bg2/80 border border-tavern-gold/25 rounded-lg px-4 py-3 text-tavern-text font-serif-cn text-sm focus:border-tavern-gold/60 focus:bg-tavern-bg2 outline-none resize-none max-h-32 transition-colors placeholder:text-tavern-muted/50"
           disabled={isGenerating}
         />
         <button

@@ -58,6 +58,7 @@ export interface RecordCardData {
   portrait: string;
   userAppeal: string;
   characterInsist: string;
+  goldenQuotes: string[];
   realEnding: string;
   dialogueRound: number;
   date: string;

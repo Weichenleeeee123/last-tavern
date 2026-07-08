@@ -56,8 +56,8 @@ export function ChatArea() {
           <div
             className={`max-w-[75%] px-4 py-3 ${
               msg.role === 'user'
-                ? 'bg-tavern-bg2/50 text-tavern-text border border-tavern-gold/10 rounded-lg rounded-tr-sm'
-                : 'bg-tavern-bg2/80 text-tavern-gold/90 border border-tavern-gold/20 rounded-lg rounded-tl-sm'
+                ? 'bg-tavern-bg2/80 text-tavern-text border border-tavern-gold/20 rounded-lg rounded-tr-sm'
+                : 'bg-tavern-bg2/95 text-tavern-gold border border-tavern-gold/25 rounded-lg rounded-tl-sm'
             }`}
           >
             <p className="font-serif-cn text-sm leading-relaxed whitespace-pre-wrap">
@@ -88,7 +88,7 @@ export function ChatArea() {
               />
             </div>
           )}
-          <div className="bg-tavern-bg2/80 text-tavern-muted border border-tavern-gold/20 rounded-lg rounded-tl-sm px-4 py-3">
+          <div className="bg-tavern-bg2/95 text-tavern-muted border border-tavern-gold/25 rounded-lg rounded-tl-sm px-4 py-3">
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-tavern-gold/40 animate-pulse" />
               <span className="w-1.5 h-1.5 rounded-full bg-tavern-gold/40 animate-pulse" style={{ animationDelay: '0.2s' }} />
