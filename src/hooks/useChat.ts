@@ -1,9 +1,30 @@
 import { useCallback } from 'react';
 import { useStore } from '../store/useStore';
 import { sendChatMessage, generateSummary } from '../services/llm';
+import { playReceiveSound } from '../services/audio';
 import type { RecordCardData } from '../types';
 
 const MAX_ROUNDS = 12;
+
+// 角色开场白提示词
+const OPENING_PROMPT = `（一位陌生来客推开了酒馆的门，缓步走向你并坐下。你注视着此人，决定先开口。）
+
+请先用3-4句话简要讲述你一生的故事和成就——你是谁，你经历了什么，你为何名垂青史。让来客了解你的生平背景。然后用1-2句话回到当下——今夜是你人生的最后一夜，你会对这位来客说什么。
+
+总计控制在5-6句话。保持你的语言风格和身份特征。
+
+最后附上3个来客可能的回应选项（格式如系统提示中的|||分隔）。`;
+
+/** 从 LLM 回复中解析正文和建议选项 */
+function parseResponse(raw: string): { content: string; suggestions: string[] } {
+  const parts = raw.split('|||');
+  const content = parts[0].trim();
+  const suggestions = parts.slice(1)
+    .map(s => s.trim())
+    .filter(s => s.length > 0 && s.length <= 50)
+    .slice(0, 3);
+  return { content, suggestions };
+}
 
 export function useChat() {
   const {
@@ -16,12 +37,11 @@ export function useChat() {
     fateState,
     updateFate,
     addMessage,
+    setSuggestions,
     setRecordCard,
     setScene,
   } = useStore();
 
-  // 注意:endDialogue 必须先于 sendMessage 定义,
-  // 否则 sendMessage 中引用 endDialogue 会因 const 暂时性死区(TDZ)而抛出运行时错误。
   const endDialogue = useCallback(async () => {
     if (!currentCharacter) return;
 
@@ -41,10 +61,10 @@ export function useChat() {
         dialogueRound: useStore.getState().dialogueRound,
         date: new Date().toLocaleDateString('zh-CN'),
       };
+      useStore.getState().clearConversation(currentCharacter.id);
       setRecordCard(recordCard);
       setScene('record');
     } catch {
-      // 降级:直接用静态数据,从最后一条消息中截取摘要
       const lastUserMsg = [...messages].reverse().find(m => m.role === 'user');
       const lastAssistantMsg = [...messages].reverse().find(m => m.role === 'assistant');
       const recordCard: RecordCardData = {
@@ -60,12 +80,55 @@ export function useChat() {
         dialogueRound: useStore.getState().dialogueRound,
         date: new Date().toLocaleDateString('zh-CN'),
       };
+      useStore.getState().clearConversation(currentCharacter.id);
       setRecordCard(recordCard);
       setScene('record');
     } finally {
       setGenerating(false);
     }
   }, [currentCharacter, messages, settings, setRecordCard, setScene, setGenerating]);
+
+  // 角色主动开口
+  const initiateDialogue = useCallback(async () => {
+    if (!currentCharacter || isGenerating) return;
+    if (!settings.apiKey) {
+      useStore.getState().setShowSettings(true);
+      return;
+    }
+
+    setGenerating(true);
+    setSuggestions([]);
+    try {
+      const raw = await sendChatMessage(
+        settings,
+        currentCharacter.systemPrompt,
+        [],
+        OPENING_PROMPT
+      );
+
+      const { content, suggestions } = parseResponse(raw);
+
+      const assistantMsg = {
+        id: crypto.randomUUID(),
+        role: 'assistant' as const,
+        content,
+        timestamp: Date.now(),
+      };
+      addMessage(assistantMsg);
+      setSuggestions(suggestions);
+      playReceiveSound();
+    } catch {
+      const errorMsg = {
+        id: crypto.randomUUID(),
+        role: 'assistant' as const,
+        content: '...（他看了你一眼，端起酒杯，却没有说话。烛火在你们之间摇晃。）',
+        timestamp: Date.now(),
+      };
+      addMessage(errorMsg);
+    } finally {
+      setGenerating(false);
+    }
+  }, [currentCharacter, isGenerating, settings, addMessage, setSuggestions, setGenerating]);
 
   const sendMessage = useCallback(async (content: string) => {
     if (!currentCharacter || isGenerating) return;
@@ -74,7 +137,6 @@ export function useChat() {
       return;
     }
 
-    // 添加用户消息
     const userMsg = {
       id: crypto.randomUUID(),
       role: 'user' as const,
@@ -82,41 +144,41 @@ export function useChat() {
       timestamp: Date.now(),
     };
     addMessage(userMsg);
+    setSuggestions([]);
     setGenerating(true);
 
-    // 更新命运之秤:用户劝说推动向"改变"倾斜
     const newFate = Math.min(100, fateState.value + 15);
     updateFate(newFate);
 
     try {
-      const response = await sendChatMessage(
+      const raw = await sendChatMessage(
         settings,
         currentCharacter.systemPrompt,
         messages,
         content
       );
 
-      // 添加人物回应
+      const { content: respContent, suggestions } = parseResponse(raw);
+
       const assistantMsg = {
         id: crypto.randomUUID(),
         role: 'assistant' as const,
-        content: response,
+        content: respContent,
         timestamp: Date.now(),
       };
       addMessage(assistantMsg);
+      setSuggestions(suggestions);
+      playReceiveSound();
       incrementRound();
 
-      // 人物回应后,命运之秤弹回"命运"侧
       const pulledBack = Math.max(0, newFate - 20);
       updateFate(pulledBack);
 
-      // 通过 getState() 读取最新轮次,避免闭包中的陈旧值
       const currentRound = useStore.getState().dialogueRound;
       if (currentRound >= MAX_ROUNDS) {
         await endDialogue();
       }
     } catch {
-      // 友好错误处理:不暴露底层异常,以酒馆氛围语提示用户重试
       const errorMsg = {
         id: crypto.randomUUID(),
         role: 'assistant' as const,
@@ -127,7 +189,7 @@ export function useChat() {
     } finally {
       setGenerating(false);
     }
-  }, [currentCharacter, isGenerating, messages, settings, fateState, addMessage, setGenerating, incrementRound, updateFate, endDialogue]);
+  }, [currentCharacter, isGenerating, messages, settings, fateState, addMessage, setSuggestions, setGenerating, incrementRound, updateFate, endDialogue]);
 
-  return { sendMessage, endDialogue };
+  return { sendMessage, endDialogue, initiateDialogue };
 }

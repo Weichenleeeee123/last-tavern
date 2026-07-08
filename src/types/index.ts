@@ -1,5 +1,5 @@
 // 桌子类型
-export type TableType = 'power' | 'ink' | 'mirror' | 'truth';
+export type TableType = 'power' | 'ink' | 'mirror' | 'truth' | 'melody' | 'stars';
 
 // 劝说难度
 export type Difficulty = 'extreme' | 'high' | 'medium' | 'low';

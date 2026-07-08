@@ -1,17 +1,26 @@
+import { useEffect, useRef } from 'react';
 import { useStore } from '../../store/useStore';
+import { useChat } from '../../hooks/useChat';
 import { CharacterInfo } from './CharacterInfo';
 import { ChatArea } from './ChatArea';
 import { InputBar } from './InputBar';
 import { FateScale } from './FateScale';
 import { CandleParticles } from '../shared/CandleParticles';
-import { Vignette } from '../shared/Vignette';
 
 export function DialogueScene() {
   const character = useStore((s) => s.currentCharacter);
+  const messages = useStore((s) => s.messages);
   const setScene = useStore((s) => s.setScene);
-  const clearMessages = useStore((s) => s.clearMessages);
-  const resetRound = useStore((s) => s.resetRound);
-  const resetFate = useStore((s) => s.resetFate);
+  const { initiateDialogue } = useChat();
+  const hasInitiated = useRef(false);
+
+  // 角色主动开口：进入对话时如果没有消息，自动触发角色开场白
+  useEffect(() => {
+    if (character && messages.length === 0 && !hasInitiated.current) {
+      hasInitiated.current = true;
+      initiateDialogue();
+    }
+  }, [character, messages.length, initiateDialogue]);
 
   if (!character) {
     setScene('hall');
@@ -19,48 +28,73 @@ export function DialogueScene() {
   }
 
   const handleBack = () => {
-    clearMessages();
-    resetRound();
-    resetFate();
+    // 离席：保存当前对话记录，不清除
+    useStore.getState().saveConversation(character.id);
     setScene('hall');
   };
 
   return (
-    <div className="relative min-h-screen bg-tavern-bg overflow-hidden animate-fade-in">
-      <CandleParticles count={15} />
-      <Vignette />
+    <div className="fixed inset-0 z-50 overlay-backdrop overlay-in flex flex-col">
+      <CandleParticles count={10} />
 
-      {/* 返回按钮 */}
+      {/* Close button */}
       <button
         onClick={handleBack}
-        className="fixed top-4 left-4 z-30 text-tavern-muted hover:text-tavern-gold transition-colors flex items-center gap-2"
+        className="absolute top-4 left-4 z-10 text-tavern-muted hover:text-tavern-gold transition-colors flex items-center gap-2 group"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
         <span className="font-serif-cn text-sm">离席</span>
       </button>
 
-      {/* 主布局:左35%人物信息,右65%对话 */}
-      <div className="relative z-20 flex h-screen pt-16">
-        {/* 左侧 */}
-        <div className="w-full md:w-[35%] p-6 overflow-y-auto border-r border-tavern-gold/10">
+      {/* Desktop layout */}
+      <div className="hidden md:flex flex-1 overflow-hidden min-h-0">
+        {/* Left: Character info */}
+        <div className="w-[32%] flex flex-col p-6 pt-16 overflow-y-auto styled-scroll border-r border-tavern-gold/10">
           <CharacterInfo />
         </div>
 
-        {/* 右侧 */}
-        <div className="hidden md:flex md:w-[65%] flex-col">
+        {/* Right: Dialogue area */}
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <ChatArea />
-          <FateScale />
-          <InputBar />
+          <div className="flex-shrink-0">
+            <FateScale />
+            <InputBar />
+          </div>
         </div>
       </div>
 
-      {/* 移动端对话区 */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 h-[60vh] flex flex-col bg-tavern-bg/95">
+      {/* Mobile layout */}
+      <div className="md:hidden flex-1 flex flex-col overflow-hidden min-h-0">
+        {/* Character header */}
+        <div className="flex items-center gap-3 p-3 pt-12 border-b border-tavern-gold/10 flex-shrink-0">
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-tavern-gold/30 flex-shrink-0">
+            <img
+              src={character.portrait}
+              alt={character.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.style.display = 'none';
+                const parent = target.parentElement;
+                if (parent) {
+                  parent.innerHTML = `<span class="text-tavern-gold/40 font-serif-cn text-sm flex items-center justify-center w-full h-full">${character.name[0]}</span>`;
+                }
+              }}
+            />
+          </div>
+          <div className="min-w-0">
+            <p className="text-tavern-gold font-serif-cn text-sm truncate">{character.name}</p>
+            <p className="text-tavern-muted font-serif-en text-xs italic truncate">{character.nameEn}</p>
+          </div>
+        </div>
+
         <ChatArea />
-        <FateScale />
-        <InputBar />
+        <div className="flex-shrink-0">
+          <FateScale />
+          <InputBar />
+        </div>
       </div>
     </div>
   );

@@ -2,6 +2,13 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Scene, Character, Message, LLMSettings, RecordCardData, FateState } from '../types';
 
+// 每个角色的对话记录
+interface CharacterConversation {
+  messages: Message[];
+  dialogueRound: number;
+  fateState: FateState;
+}
+
 interface AppState {
   // 场景
   currentScene: Scene;
@@ -22,6 +29,10 @@ interface AppState {
   incrementRound: () => void;
   resetRound: () => void;
 
+  // 引导选项
+  suggestions: string[];
+  setSuggestions: (s: string[]) => void;
+
   // 命运之秤
   fateState: FateState;
   updateFate: (newValue: number) => void;
@@ -38,6 +49,12 @@ interface AppState {
   // 设置面板
   showSettings: boolean;
   setShowSettings: (val: boolean) => void;
+
+  // 各角色对话记录(persist)
+  conversations: Record<string, CharacterConversation>;
+  saveConversation: (characterId: string) => void;
+  loadConversation: (characterId: string) => void;
+  clearConversation: (characterId: string) => void;
 }
 
 const defaultSettings: LLMSettings = {
@@ -48,22 +65,44 @@ const defaultSettings: LLMSettings = {
 
 export const useStore = create<AppState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       currentScene: 'door',
       setScene: (scene) => set({ currentScene: scene }),
 
       currentCharacter: null,
-      selectCharacter: (char) => set({ currentCharacter: char }),
+      selectCharacter: (char) => {
+        const state = get();
+        // 切换到不同角色时，保存当前对话并加载新角色的对话
+        if (state.currentCharacter?.id !== char.id) {
+          // 保存当前对话
+          if (state.currentCharacter) {
+            state.saveConversation(state.currentCharacter.id);
+          }
+          // 加载新角色对话（如果有）
+          const saved = state.conversations[char.id];
+          set({
+            currentCharacter: char,
+            messages: saved?.messages ?? [],
+            dialogueRound: saved?.dialogueRound ?? 0,
+            fateState: saved?.fateState ?? { value: 0, history: [0] },
+          });
+        } else {
+          set({ currentCharacter: char });
+        }
+      },
       clearCharacter: () => set({ currentCharacter: null }),
 
       messages: [],
       addMessage: (msg) => set((state) => ({ messages: [...state.messages, msg] })),
-      clearMessages: () => set({ messages: [] }),
+      clearMessages: () => set({ messages: [], suggestions: [] }),
       isGenerating: false,
       setGenerating: (val) => set({ isGenerating: val }),
       dialogueRound: 0,
       incrementRound: () => set((state) => ({ dialogueRound: state.dialogueRound + 1 })),
       resetRound: () => set({ dialogueRound: 0 }),
+
+      suggestions: [],
+      setSuggestions: (s) => set({ suggestions: s }),
 
       fateState: { value: 0, history: [0] },
       updateFate: (newValue) =>
@@ -84,10 +123,56 @@ export const useStore = create<AppState>()(
 
       showSettings: false,
       setShowSettings: (val) => set({ showSettings: val }),
+
+      conversations: {},
+      saveConversation: (characterId) => {
+        const state = get();
+        set({
+          conversations: {
+            ...state.conversations,
+            [characterId]: {
+              messages: state.messages,
+              dialogueRound: state.dialogueRound,
+              fateState: state.fateState,
+            },
+          },
+        });
+      },
+      loadConversation: (characterId) => {
+        const state = get();
+        const saved = state.conversations[characterId];
+        if (saved) {
+          set({
+            messages: saved.messages,
+            dialogueRound: saved.dialogueRound,
+            fateState: saved.fateState,
+          });
+        } else {
+          set({
+            messages: [],
+            dialogueRound: 0,
+            fateState: { value: 0, history: [0] },
+          });
+        }
+      },
+      clearConversation: (characterId) => {
+        const state = get();
+        const newConversations = { ...state.conversations };
+        delete newConversations[characterId];
+        set({
+          conversations: newConversations,
+          messages: [],
+          dialogueRound: 0,
+          fateState: { value: 0, history: [0] },
+        });
+      },
     }),
     {
       name: 'tavern-settings',
-      partialize: (state) => ({ settings: state.settings }) as AppState,
+      partialize: (state) => ({
+        settings: state.settings,
+        conversations: state.conversations,
+      }) as AppState,
     }
   )
 );

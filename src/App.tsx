@@ -11,7 +11,7 @@ function App() {
   return (
     <>
       {scene === 'door' && <DoorScene />}
-      {scene === 'hall' && <TavernHall />}
+      {(scene === 'hall' || scene === 'dialogue') && <TavernHall />}
       {scene === 'dialogue' && <DialogueScene />}
       {scene === 'record' && <RecordCard />}
       <SettingsPanel />

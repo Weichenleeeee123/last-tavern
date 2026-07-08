@@ -40,28 +40,31 @@ export function RecordCard() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-fade-in overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 animate-fade-in overflow-y-auto">
       {/* 记录卡 */}
       <div
         ref={cardRef}
-        className="bg-gradient-to-b from-tavern-bg2 to-tavern-bg border-2 border-tavern-gold/30 rounded-lg p-8 w-full max-w-sm shadow-2xl"
+        className="bg-parchment border-2 border-amber-900/40 rounded-lg p-8 w-full max-w-sm shadow-2xl relative overflow-hidden"
       >
+        {/* Parchment edge burn */}
+        <div className="absolute inset-0 pointer-events-none" style={{ boxShadow: 'inset 0 0 40px rgba(80,50,20,0.3)' }} />
+
         {/* 顶部铭牌 */}
-        <div className="text-center border-b border-tavern-gold/20 pb-4">
-          <p className="text-tavern-gold font-serif-cn text-lg tracking-wider">
+        <div className="relative text-center border-b border-amber-900/30 pb-4">
+          <p className="text-amber-900 font-serif-cn text-lg tracking-wider font-bold">
             临终酒馆
           </p>
-          <p className="text-tavern-muted font-serif-en text-xs italic">
+          <p className="text-amber-800/70 font-serif-en text-xs italic">
             The Last Tavern
           </p>
-          <p className="text-tavern-muted font-serif-cn text-xs mt-1">
+          <p className="text-amber-900/60 font-serif-cn text-xs mt-1">
             对饮记录 · {recordCard.date}
           </p>
         </div>
 
         {/* 人物区 */}
-        <div className="flex items-center gap-4 py-4 border-b border-tavern-gold/20">
-          <div className="w-16 h-16 rounded-lg overflow-hidden border border-tavern-gold/20 bg-tavern-bg flex-shrink-0">
+        <div className="relative flex items-center gap-4 py-4 border-b border-amber-900/30">
+          <div className="w-16 h-16 rounded-lg overflow-hidden border border-amber-900/30 bg-amber-950 flex-shrink-0">
             <img
               src={recordCard.portrait}
               alt={recordCard.characterName}
@@ -71,70 +74,70 @@ export function RecordCard() {
                 target.style.display = 'none';
                 const parent = target.parentElement;
                 if (parent) {
-                  parent.innerHTML = `<span class="text-tavern-gold/40 font-serif-cn text-xl flex items-center justify-center w-full h-full">${recordCard.characterName[0]}</span>`;
+                  parent.innerHTML = `<span class="text-amber-700 font-serif-cn text-xl flex items-center justify-center w-full h-full">${recordCard.characterName[0]}</span>`;
                 }
               }}
             />
           </div>
           <div>
-            <p className="text-tavern-gold font-serif-cn text-base">
+            <p className="text-amber-950 font-serif-cn text-base font-bold">
               {recordCard.characterName}
             </p>
-            <p className="text-tavern-muted font-serif-en text-xs italic">
+            <p className="text-amber-800/70 font-serif-en text-xs italic">
               {recordCard.characterNameEn}
             </p>
-            <p className="text-tavern-text/60 font-serif-cn text-xs">
+            <p className="text-amber-900/60 font-serif-cn text-xs">
               {recordCard.era}
             </p>
           </div>
         </div>
 
         {/* 临终独白 */}
-        <div className="py-3 border-b border-tavern-gold/20">
-          <p className="text-tavern-text/70 font-serif-cn text-sm italic text-center">
+        <div className="relative py-3 border-b border-amber-900/30">
+          <p className="text-amber-900/80 font-serif-cn text-sm italic text-center">
             "{recordCard.quote}"
           </p>
         </div>
 
         {/* 三段式核心 */}
-        <div className="py-4 space-y-4">
+        <div className="relative py-4 space-y-4">
           <div>
-            <p className="text-tavern-gold font-serif-cn text-xs mb-1">
+            <p className="text-amber-800 font-serif-cn text-xs mb-1 font-bold">
               你试图改变的
             </p>
-            <p className="text-tavern-text/80 font-serif-cn text-sm leading-relaxed">
+            <p className="text-amber-950/80 font-serif-cn text-sm leading-relaxed">
               {recordCard.userAppeal}
             </p>
           </div>
 
-          <div className="border-t border-tavern-gold/10 pt-3">
-            <p className="text-tavern-gold font-serif-cn text-xs mb-1">
+          <div className="border-t border-amber-900/20 pt-3">
+            <p className="text-amber-800 font-serif-cn text-xs mb-1 font-bold">
               他坚持的
             </p>
-            <p className="text-tavern-text/80 font-serif-cn text-sm leading-relaxed">
+            <p className="text-amber-950/80 font-serif-cn text-sm leading-relaxed">
               {recordCard.characterInsist}
             </p>
           </div>
 
-          <div className="border-t border-tavern-gold/10 pt-3">
-            <p className="text-tavern-gold font-serif-cn text-xs mb-1">
+          <div className="border-t border-amber-900/20 pt-3">
+            <p className="text-amber-800 font-serif-cn text-xs mb-1 font-bold">
               史书上的结局
             </p>
-            <p className="text-tavern-muted font-serif-cn text-sm leading-relaxed">
+            <p className="text-amber-900/70 font-serif-cn text-sm leading-relaxed">
               {recordCard.realEnding}
             </p>
           </div>
         </div>
 
         {/* 底部印记 */}
-        <div className="border-t border-tavern-gold/20 pt-4 text-center">
-          <p className="text-tavern-muted font-serif-cn text-xs">
+        <div className="relative border-t border-amber-900/30 pt-4 text-center">
+          <p className="text-amber-800/70 font-serif-cn text-xs">
             对饮 {recordCard.dialogueRound} 轮
           </p>
-          <p className="text-tavern-text/50 font-serif-cn text-xs italic mt-2">
+          <p className="text-amber-900/50 font-serif-cn text-xs italic mt-2">
             历史不可重来,但理解可以发生
           </p>
-          <p className="text-tavern-gold/20 font-serif-en text-2xl mt-2">
+          <p className="text-amber-900/20 font-serif-en text-2xl mt-2">
             ☩
           </p>
         </div>
