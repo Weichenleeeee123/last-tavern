@@ -48,7 +48,7 @@ export async function sendChatMessage(
         model: settings.model,
         messages: chatMessages,
         temperature: 0.8,
-        max_tokens: 2000,
+        max_tokens: 8000,
       }),
     },
     30000
@@ -94,7 +94,7 @@ export async function generateSummary(
         model: settings.model,
         messages: chatMessages,
         temperature: 0.3,
-        max_tokens: 1500,
+        max_tokens: 8000,
       }),
     },
     30000

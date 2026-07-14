@@ -153,7 +153,7 @@ export const onRequestPost: PagesFunction = async (context) => {
         model: body.model || DEFAULT_MODEL,
         messages: body.messages,
         temperature: body.temperature ?? 0.8,
-        max_tokens: body.max_tokens ?? 2000,
+        max_tokens: body.max_tokens ?? 8000,
       }),
     });
 
