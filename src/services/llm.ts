@@ -31,14 +31,19 @@ export async function sendChatMessage(
     { role: 'user', content: userMessage + formatReminder },
   ];
 
+  // 免Key模式：apiKey 为空时，走服务端代理（不带 Authorization 头）
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (settings.apiKey) {
+    headers['Authorization'] = `Bearer ${settings.apiKey}`;
+  }
+
   const response = await fetchWithTimeout(
     settings.endpoint,
     {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${settings.apiKey}`,
-      },
+      headers,
       body: JSON.stringify({
         model: settings.model,
         messages: chatMessages,
@@ -72,14 +77,19 @@ export async function generateSummary(
     { role: 'user', content: SUMMARY_PROMPT },
   ];
 
+  // 免Key模式：apiKey 为空时，走服务端代理
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (settings.apiKey) {
+    headers['Authorization'] = `Bearer ${settings.apiKey}`;
+  }
+
   const response = await fetchWithTimeout(
     settings.endpoint,
     {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${settings.apiKey}`,
-      },
+      headers,
       body: JSON.stringify({
         model: settings.model,
         messages: chatMessages,

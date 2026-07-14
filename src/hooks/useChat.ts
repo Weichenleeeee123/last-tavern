@@ -138,7 +138,7 @@ export function useChat() {
   // 角色主动开口
   const initiateDialogue = useCallback(async () => {
     if (!currentCharacter || isGenerating) return;
-    if (!settings.apiKey) {
+    if (!settings.apiKey && settings.endpoint !== '/api/chat') {
       useStore.getState().setShowSettings(true);
       return;
     }
@@ -180,7 +180,7 @@ export function useChat() {
 
   const sendMessage = useCallback(async (content: string) => {
     if (!currentCharacter || isGenerating) return;
-    if (!settings.apiKey) {
+    if (!settings.apiKey && settings.endpoint !== '/api/chat') {
       useStore.getState().setShowSettings(true);
       return;
     }

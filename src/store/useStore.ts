@@ -58,9 +58,9 @@ interface AppState {
 }
 
 const defaultSettings: LLMSettings = {
-  endpoint: 'https://api.openai.com/v1/chat/completions',
+  endpoint: '/api/chat',
   apiKey: '',
-  model: 'gpt-4o-mini',
+  model: 'deepseek-chat',
 };
 
 export const useStore = create<AppState>()(
@@ -169,6 +169,17 @@ export const useStore = create<AppState>()(
     }),
     {
       name: 'tavern-settings',
+      version: 1,
+      migrate: (persistedState: unknown, version: number) => {
+        const state = persistedState as Partial<AppState>;
+        // v0 -> v1: 迁移旧默认设置到免Key代理模式
+        if (version < 1 && state.settings) {
+          if (state.settings.endpoint === 'https://api.openai.com/v1/chat/completions' && !state.settings.apiKey) {
+            state.settings = { ...defaultSettings };
+          }
+        }
+        return state as AppState;
+      },
       partialize: (state) => ({
         settings: state.settings,
         conversations: state.conversations,

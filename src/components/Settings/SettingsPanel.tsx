@@ -3,6 +3,13 @@ import { useStore } from '../../store/useStore';
 
 const PRESETS = [
   {
+    name: '免Key模式',
+    endpoint: '/api/chat',
+    model: 'deepseek-chat',
+    placeholder: '无需填写',
+    keyHint: '使用酒馆内置服务，无需配置',
+  },
+  {
     name: 'DeepSeek',
     endpoint: 'https://api.deepseek.com/v1/chat/completions',
     model: 'deepseek-chat',
@@ -41,6 +48,10 @@ export function SettingsPanel() {
   const applyPreset = (preset: typeof PRESETS[0]) => {
     setLocalEndpoint(preset.endpoint);
     setLocalModel(preset.model);
+    // 免Key模式清空 API Key
+    if (preset.name === '免Key模式') {
+      setLocalApiKey('');
+    }
     setActivePreset(preset.name);
   };
 
@@ -61,7 +72,7 @@ export function SettingsPanel() {
         </h2>
 
         {/* Preset buttons */}
-        <div className="flex gap-2 mb-5">
+        <div className="grid grid-cols-2 gap-2 mb-5">
           {PRESETS.map((preset) => (
             <button
               key={preset.name}

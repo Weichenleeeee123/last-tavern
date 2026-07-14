@@ -13,7 +13,8 @@ export function CharacterCard({ character }: Props) {
   const setShowSettings = useStore((s) => s.setShowSettings);
 
   const handleClick = () => {
-    if (!settings.apiKey.trim()) {
+    // 免Key模式（endpoint 为 /api/chat）无需检查 apiKey
+    if (!settings.apiKey.trim() && settings.endpoint !== '/api/chat') {
       setShowSettings(true);
       return;
     }
