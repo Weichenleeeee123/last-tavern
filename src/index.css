@@ -28,15 +28,15 @@
     box-shadow: 0 0 30px rgba(244, 200, 66, 0.5), 0 0 60px rgba(244, 200, 66, 0.2);
   }
 
-  /* Background image scenes */
+  /* Background image scenes - CDN vars injected via JS (see cdn.ts) */
   .bg-door-scene {
-    background-image: url('/bg/door-wall.jpg');
+    background-image: var(--bg-door-wall, url('/bg/door-wall.jpg'));
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
   }
   .bg-tavern-scene {
-    background-image: url('/bg/tavern-interior.jpg');
+    background-image: var(--bg-tavern-interior, url('/bg/tavern-interior.jpg'));
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
