@@ -4,7 +4,7 @@
 // 设置为 OSS/CDN 域名时使用 CDN 加速（https://bucket.oss-cn-region.aliyuncs.com/portraits/xxx.jpg）
 
 // ⬇️ 创建 OSS Bucket 后，把下面的 URL 改成你的 Bucket 公开访问域名 ⬇️
-export const CDN_BASE: string = '';
+export const CDN_BASE: string = 'https://last-tavern.oss-cn-hangzhou.aliyuncs.com';
 
 /** 拼接 CDN 路径 */
 export function cdnUrl(path: string): string {
