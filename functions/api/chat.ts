@@ -10,11 +10,11 @@ interface ChatRequest {
 }
 
 const DEEPSEEK_ENDPOINT = 'https://api.deepseek.com/v1/chat/completions';
-const DEFAULT_MODEL = 'deepseek-chat';
+const DEFAULT_MODEL = 'deepseek-v4-pro';
 
 // 限流配置
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 分钟窗口
-const RATE_LIMIT_MAX_REQUESTS = 15;   // 每窗口最大请求数
+const RATE_LIMIT_MAX_REQUESTS = 30;   // 每窗口最大请求数
 
 // 所有响应都带 CORS 头
 function corsHeaders(): Record<string, string> {

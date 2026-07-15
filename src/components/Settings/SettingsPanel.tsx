@@ -5,14 +5,14 @@ const PRESETS = [
   {
     name: '免Key模式',
     endpoint: '/api/chat',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-pro',
     placeholder: '无需填写',
     keyHint: '使用酒馆内置服务，无需配置',
   },
   {
     name: 'DeepSeek',
     endpoint: 'https://api.deepseek.com/v1/chat/completions',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-pro',
     placeholder: 'sk-...',
     keyHint: '在 platform.deepseek.com 获取',
   },

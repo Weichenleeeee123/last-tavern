@@ -60,7 +60,7 @@ interface AppState {
 const defaultSettings: LLMSettings = {
   endpoint: '/api/chat',
   apiKey: '',
-  model: 'deepseek-chat',
+  model: 'deepseek-v4-pro',
 };
 
 export const useStore = create<AppState>()(
